@@ -1,8 +1,6 @@
 # coding=utf-8
 
 # 函数
-import module
-
 
 def firstFunction():
     """第一个函数"""
@@ -64,4 +62,4 @@ def scope():
 # count = scope()
 print 'after - ', count
 
-module.testModule('444')
+
