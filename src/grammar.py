@@ -22,3 +22,4 @@ setString = '23456'
 testSet = set(setString)
 print testSet
 
+print repr(123)

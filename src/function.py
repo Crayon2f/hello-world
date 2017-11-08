@@ -53,13 +53,17 @@ print lambdaFunction(3, 4, 5)
 
 count = 3
 
-print 'pre - ', count
+print 'pre - ', count  # 值传递,引用传递
+
+
 def scope():
     """ 作用域 """
     count = 23 + 45
     print 'scope - ', count
     return count
 # count = scope()
+
+
 print 'after - ', count
 
 

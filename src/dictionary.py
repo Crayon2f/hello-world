@@ -1,5 +1,5 @@
 # coding=utf-8
-# 字典,其实就是json
+# 字典,其实就是json,key不可以重复
 
 dict1 = {
     'a': 1,
@@ -9,7 +9,8 @@ dict1 = {
 }
 print dict1
 
-print 'a' in dict1
+print '344' in dict1
+
 print dict1.has_key('a')
 
 # del dict1['a']  # 删除键是'Name'的条目
@@ -20,6 +21,11 @@ print len(dict1)
 
 print str(dict1)
 
-print dict1.copy()
+dict2 = dict1.copy()
+print dict2
 
-print dict1.fromkeys((5, 4, 5), '55')
+print dict1.fromkeys((5, 4, 5), '55')  # 构建字典,fromkeys,key
+
+dict3 = dict2.fromkeys((2, 3, 4), '45')
+
+print dict3
