@@ -1,9 +1,9 @@
 import ConfigParser
 import sys
 
-config = ConfigParser.RawConfigParser()
-config.read(sys.path[1] + '\\config\\prop.ini')
+__config = ConfigParser.RawConfigParser()
+__config.read(sys.path[1] + '\\config\\prop.ini')
 
 
 def init():
-    return config
+    return __config
