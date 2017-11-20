@@ -36,6 +36,10 @@ def test_dict():
     print var
 
 
+def str_reverse(string):
+    return string[::-1]
+
+
 if __name__ == '__main__':
     int_list_trans_str()
 

@@ -1,5 +1,6 @@
 # coding=utf-8
 # 格式化
+import sys
 
 # 采用预编译的方式
 # print "My name is %s, and %d's old." % ('jack', 23)  # My name is jack, and 23's old.
@@ -45,3 +46,32 @@ isalpha = 'abc123'
 print isalpha.isalpha()  # 至少有一个字符并且所有字符都是字母则返回 True,否则返回 False
 isalpha = 'abc'
 print isalpha.isalpha()
+
+print "234".isdigit()
+
+"""
+string.isalnum()
+如果 string 至少有一个字符并且所有字符都是字母或数字则返回 True,否则返回 False
+string.isalpha()
+如果 string 至少有一个字符并且所有字符都是字母则返回 True,否则返回 False
+string.isdecimal()
+如果 string 只包含十进制数字则返回 True 否则返回 False.
+string.isdigit()
+如果 string 只包含数字则返回 True 否则返回 False.
+string.islower()
+如果 string 中包含至少一个区分大小写的字符，并且所有这些(区分大小写的)字符都是小写，则返回 True ，否则返回 False
+string.isspace()
+如果 string 中只包含空格，则返回 True，否则返回 False.
+string.istitle()
+如果 string 是标题化的(见 title())则返回 True，否则返回 False
+string.isupper()
+如果 string 中包含至少一个区分大小写的字符，并且所有这些(区分大小写的)字符都是大写，则返回 True，否则返回 False
+
+"""
+
+print 'my {1[spam]} runs {0.platform}'.format(sys, {'spam': 'laptop'})
+
+
+print sys.platform
+
+print
