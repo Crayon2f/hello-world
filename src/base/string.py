@@ -1,6 +1,6 @@
 # coding=utf-8
 # 格式化
-import sys
+import system
 
 # 采用预编译的方式
 # print "My name is %s, and %d's old." % ('jack', 23)  # My name is jack, and 23's old.
@@ -69,9 +69,9 @@ string.isupper()
 
 """
 
-print 'my {1[spam]} runs {0.platform}'.format(sys, {'spam': 'laptop'})
+print 'my {1[spam]} runs {0.platform}'.format(system, {'spam': 'laptop'})
 
 
-print sys.platform
+print system.platform
 
 print

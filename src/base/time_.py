@@ -11,6 +11,7 @@ localtime = time.localtime(time.time())
 print localtime
 
 print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+print time.strftime('%Y-%m-%d 00:00:00', time.localtime())
 
 # print time.clock()
 #

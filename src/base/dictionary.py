@@ -1,5 +1,5 @@
 # coding=utf-8
-# 字典,其实就是json,key不可以重复
+# 字典,其实就是json,key不可以重复,并且key无序
 
 dict1 = {
     'a': 1,
