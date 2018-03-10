@@ -82,14 +82,18 @@ class MySQL:
 
 if __name__ == '__main__':
     try:
-        test_bean = {
-            'province_id': '2222',
-            'city_name': 'test',
-            'description': 'test'
-        }
-        result = MySQL().insert('city', test_bean)
-        print result
+        # test_bean = {
+        #     'province_id': '2222',
+        #     'city_name': 'test',
+        #     'description': 'test'
+        # }
+        # result = MySQL().insert('city', test_bean)
+        # print result
         # print MySQL().delete_by_id('city', 3414)
+        sql_exp = SqlExpression().exp_and('id', equal, 4415)
+        result = MySQL().query_one('activity_registration', '*', Cnd().where(sql_exp))
+        print result
+
     except SQLError, error:
         print error.message
         print type(error)

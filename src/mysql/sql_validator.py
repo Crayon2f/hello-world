@@ -13,5 +13,5 @@ class Validator:
 
     @staticmethod
     def check_query_params(params):
-        if params not in [list, set, str, tuple]:
+        if type(params) not in [list, set, str, tuple]:
             raise SQLError('params type error, please choose str, set, list, tuple')
