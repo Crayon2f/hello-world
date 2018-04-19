@@ -69,9 +69,12 @@ string.isupper()
 
 """
 
-print 'my {1[spam]} runs {0.platform}'.format(system, {'spam': 'laptop'})
+# print 'my {1[spam]} runs {0.platform}'.format(system, {'spam': 'laptop'})
 
 
-print system.platform
+# print system.platform
 
-print
+
+
+if __name__ == '__main__':
+    print '8888000'[0:3]

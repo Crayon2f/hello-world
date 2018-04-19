@@ -6,23 +6,23 @@ import time
 
 
 #  从8号到15号，每天人数 + 10 ，作品数+80；15号到25号，每天 + 20， 作品数+160；25到31号每天+ 50，作品数+400.
-from mysql.sql_error import SQLError
 
 
 class IncreaseVirtualArtistTask:
-
     def __init__(self, run_date=datetime.datetime.now(), activity_id=10000005):
         self.__init_db()
         self.__run_date = run_date.date()
         self.__activity_id = activity_id
         self.__increase_artist_count = 10
         self.__already_increase = False
-        if 15 < self.__run_date.day < 25:
+        if 15 < self.__run_date.day <= 25:
             self.__increase_artist_count = 20
-        if 25 < self.__run_date.day < 31:
+        if 25 < self.__run_date.day <= 31:
+            self.__increase_artist_count = 50
             self.__increase_artist_count = 50
 
     def __init_db(self):
+
         self.__connection = MySQLdb.connect(
             host='59.110.25.244',
             port=3306,
@@ -30,10 +30,16 @@ class IncreaseVirtualArtistTask:
             passwd='mt_58art@',
             db='58art_test',
             charset='utf8'
+            # host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+            # port=3306,
+            # user='mt_art58',
+            # passwd='Admin_58art',
+            # db='art58',
+            # charset='utf8'
         )
         self.__cursor = self.__connection.cursor(MySQLdb.cursors.DictCursor)
 
-    def get_random_time(self):
+    def __get_random_time(self):
         random_time_list = []
         start_millis = 9 * 3600
         end_millis = 17 * 3600
@@ -47,7 +53,7 @@ class IncreaseVirtualArtistTask:
     def generate(self):
         segment_sql = ''
         insert_sql = 'INSERT INTO activity_registration(`activity_id`,`real_name`, `artwork_count`, `create_time`, `update_time`) VALUES'
-        random_time_list = self.get_random_time()
+        random_time_list = self.__get_random_time()
         for index, segment in enumerate(random_time_list):
             segment_sql += "(10000005, 'python shell', %d, '%s', '%s')" % (int(random.uniform(6, 11)), segment, segment)
             if index == len(random_time_list) - 1:
@@ -60,12 +66,17 @@ class IncreaseVirtualArtistTask:
         self.__connection.commit()
         self.__already_increase = True
         self.__connection.close()
-        print '%s has increased '
+        print '%s has increased ' % self.__run_date
 
 
 if __name__ == '__main__':
 
-    task = IncreaseVirtualArtistTask()
+    for days in range(1, 2):
+        today = datetime.datetime.today()
+        less_day = datetime.timedelta(days=days)
+        task = IncreaseVirtualArtistTask(today + less_day)
+        task.generate()
+
     print 'complete !!'
 
     # while True:
@@ -78,8 +89,10 @@ if __name__ == '__main__':
     #             task.generate()
     #             print '----------- wait an hour ------------'
     #             time.sleep(3600)
-    #         except SQLError, error:
+    #         except BaseException, error:
     #             print error.message
     #             print error
     #     else:
     #         print "now is %d'clock, isn't zero not yet" % today.hour
+    #         print '----------- wait an hour ------------'
+    #         time.sleep(3600)

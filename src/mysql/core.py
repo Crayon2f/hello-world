@@ -9,12 +9,12 @@ from mysql.sql_validator import Validator
 
 class MySQL:
     def __init__(self):
-        self.__connection = MySQLdb.connect(host=config_kit.init().get('db-mysql', 'host'),
-                                            port=config_kit.init().getint('db-mysql', 'port'),
-                                            user=config_kit.init().get('db-mysql', 'username'),
-                                            passwd=config_kit.init().get('db-mysql', 'password'),
-                                            db=config_kit.init().get('db-mysql', 'database'),
-                                            charset=config_kit.init().get('db-mysql', 'charset'))
+        self.__connection = MySQLdb.connect(host=config_kit.CONFIG.get('db-mysql', 'host'),
+                                            port=config_kit.CONFIG.getint('db-mysql', 'port'),
+                                            user=config_kit.CONFIG.get('db-mysql', 'username'),
+                                            passwd=config_kit.CONFIG.get('db-mysql', 'password'),
+                                            db=config_kit.CONFIG.get('db-mysql', 'database'),
+                                            charset=config_kit.CONFIG.get('db-mysql', 'charset'))
         self.__cursor = self.__connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 
     def query(self, table, params='*', cnd=None):
