@@ -9,7 +9,7 @@ if __name__ == '__main__':
     # print data
     # print data.values
     # print data.index[0]
-    data = pd.read_excel("/Users/goufeifan/Downloads/test2.xls")
+    # data = pd.read_excel("/Users/goufeifan/Downloads/test2.xls")
     # print data
     '''
           名字  工作
@@ -20,10 +20,10 @@ if __name__ == '__main__':
           王五  诗人
     '''
     # print data.columns
-    for key in data.keys():
-        for content in data[key]:
-            print content
-        # print(data[key])
+    # for key in data.keys():
+    #     for content in data[key]:
+    #         print content
+    # print(data[key])
     # print data.values
 
     # '''
@@ -56,3 +56,11 @@ if __name__ == '__main__':
     # other_data = pd.read_excel('C:/Users/feifan.gou/Desktop/excel/test.xlsx', index_col=u'工作')  # 指定以哪列为索引
     # print other_data
 
+    a = ['yi', '2', '3']
+    b = ['yi', '5', '6']
+
+    # 字典中的key值即为csv中列名
+    dataFrame = pd.DataFrame({'a_name': a, 'b_name': b})
+
+    # 将DataFrame存储为csv,index表示是否显示行名，default=True
+    dataFrame.to_csv("/Users/goufeifan/Downloads/temp_cvs.csv", index=False, sep=',')
