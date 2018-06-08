@@ -35,3 +35,6 @@ class OssKit(Init):
             print '--- delete success ---'
         else:
             print 'key[%s] is empty' % key
+
+    def get_bucket_name(self):
+        return self._bucket.bucket_name
