@@ -69,8 +69,10 @@ def dir_rename(target_dir, new_name):
 
 if __name__ == '__main__':
     # rename()
-    scan_less_file()
+    # scan_less_file()
     # shutil.move(r"g:\t.txt", r'g:\other\t.txt')
     # old = r'G:\artworks\0000a32b-8313-4d93-8bbf-97156b6c574d\detail'
     # new = r'G:\artworks\0000a32b-8313-4d93-8bbf-97156b6c574d' + u'\\细节图'
     # os.rename(old, new)
+    var = 'kkk.jpg'
+    print(var[var.index('.'):])

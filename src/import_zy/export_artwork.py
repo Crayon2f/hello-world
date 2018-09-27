@@ -238,6 +238,17 @@ def translate():
                 print user['user_id'] + ' fail'
 
 
+def export_attachment():
+    sql = 'select user_id, bucket_name, key_value from activity_attachment where activity_id = %s' % activity_id
+    cursor.execute(sql)
+    attachment_list = cursor.fetchall()
+    for attachment in attachment_list:
+        author_dir = os.path.join(artwork_dir, attachment['user_id'])
+        oss_kit_ = oss_kit.OssKit(attachment['bucket_name'])
+        key = str(attachment['key_value'])
+        oss_kit_.download(key, os.path.join(author_dir, u'方案'+ key[key.index('.'):]))
+
+
 if __name__ == '__main__':
     #
     #     select
@@ -274,4 +285,6 @@ if __name__ == '__main__':
     # create_dir()
     # download_artwork_form_oss()
     # export_resume()
+    # export_attachment()
     translate()
+
