@@ -8,6 +8,7 @@ ticks = time.time()
 print '当前时间戳:', ticks
 
 localtime = time.localtime(time.time())
+print localtime.tm_year
 print localtime
 
 print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())

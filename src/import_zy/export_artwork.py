@@ -5,9 +5,11 @@ import MySQLdb
 import sys
 import os
 import math
+import time
 from kit import config_kit
 from docx import Document
 from docx.shared import Pt
+from docx.oxml.ns import qn
 from oss import oss_kit
 from import_zy import get_region
 
@@ -32,13 +34,15 @@ def create_dir():
     sql = "SELECT user_id FROM activity_registration WHERE activity_id = %s AND user_id <> ''" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
+    if len(user_list) > 0:
+        if not os.path.exists(artwork_dir):
+            os.mkdir(artwork_dir)
     for user in user_list:
         os.mkdir(artwork_dir + user['user_id'])
 
 
 def get_artwork():
-    sql = "SELECT  `NAME` AS name, ID id, AUTHOR author, `client` FROM voting_artwork WHERE ACTIVITY_ID = %s" \
-          % activity_id
+    sql = "SELECT  `NAME` AS name, ID id, AUTHOR author, `client` FROM voting_artwork WHERE ACTIVITY_ID = %s " % activity_id
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -46,7 +50,8 @@ def get_artwork():
 def download_artwork_form_oss():
     artwork_list = get_artwork()
     index_out = 0
-    _oss_kit = oss_kit.OssKit()
+    bucket_name = 'mt-original'
+    _oss_kit = oss_kit.OssKit(bucket_name)
     for artwork in artwork_list:
         index_out += 1
         print index_out
@@ -55,15 +60,6 @@ def download_artwork_form_oss():
         artwork_path = '%s/%s.jpg' % (dir_name, artwork_name)
         if os.path.exists(artwork_path):
             artwork_path = recursion(artwork_path, 0)
-        bucket_name = 'mt-official'
-        if not artwork['client'] == '58':
-            bucket_name = 'mt-zy-official'
-            if _oss_kit.get_bucket_name() == 'mt-official':
-                _oss_kit = oss_kit.OssKit(bucket_name)
-        elif artwork['client'] == '58':
-            if _oss_kit.get_bucket_name() == 'mt-zy-official':
-                _oss_kit = oss_kit.OssKit()
-
         key_list = get_oss_key(artwork['id'], bucket_name)
         try:
             if len(key_list) > 0:
@@ -88,7 +84,7 @@ def download_artwork_form_oss():
 
 def get_oss_key(artwork_id, bucket_name):
     sql = "select key_value as `key` from art_images where source_id = '%s' and " \
-          "bucket_name = '%s' and RULE_CODE = 'artwork_open' order by category desc " % (artwork_id, bucket_name)
+          "bucket_name = '%s' and RULE_CODE = 'original' order by category desc " % (artwork_id, bucket_name)
     cursor.execute(sql)
     return cursor.fetchall()
 
@@ -103,9 +99,10 @@ def translate_sign(origin):
 
 def export_resume():
     region_dict = get_region.get_name()
-    sql = "SELECT ar.user_id, ar.real_name, ar.birthday, ar.live_place AS live_place, su.GRADUATEPLACE AS school," \
-          " ar.terminal FROM activity_registration ar LEFT JOIN sys_user su ON ar.user_id = su.ID " \
-          "WHERE ar.activity_id = %s " % activity_id
+    sql = "SELECT ar.user_id, ar.real_name, ar.birthday, ar.live_place AS live_place," \
+          " ar.terminal, su.BIRTHPLACE as birth_place FROM " \
+          "activity_registration ar LEFT JOIN sys_user su ON ar.user_id = su.ID " \
+          "WHERE ar.activity_id = %s and ar.user_id <> '' and ar.user_id is not null" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
     index = 0
@@ -134,8 +131,9 @@ def export_resume():
             out_path = u"%s%s\\个人简历.docx" % (artwork_dir, user['user_id'])
             if not os.path.exists(artwork_dir + user['user_id']):
                 out_path = u"%s%s.docx" % (artwork_dir, translate_sign(real_name))
+            education_list = get_education_list(user['user_id'])
             write_word(joint_exhibition, personal_exhibition, out_path, real_name, user['birthday'], region_name,
-                       user['school'])
+                       user['birth_place'], education_list)
             print user['real_name'] + ' resume export successful '
         except BaseException, exception:
             print exception.message
@@ -143,70 +141,88 @@ def export_resume():
             print "export word error user_id ==> %s" % user['user_id']
 
 
-def write_word(joint_exhibition, personal_exhibition, out_path, real_name='', birthday='', live_place='', school=''):
-    document = Document()
+def get_education_list(user_id):
+    sql = "select * from artist_education where user_id = '%s' order by education asc" % user_id
+    cursor.execute(sql)
+    return cursor.fetchall()
 
-    document.add_heading(u'个人简历', 0)
-    document.add_paragraph()
+
+def write_word(joint_exhibition, personal_exhibition, out_path, real_name='', birthday='', live_place='',
+               birth_place='', education_list=None):
+    if education_list is None:
+        education_list = []
+    document = Document()
+    document.styles['Normal'].font.name = u'宋体'
+    document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
 
     paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'姓名：')
-    name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
-    name.bold = True
     if real_name is None:
         real_name = ''
-    paragraph.add_run(u'%s' % real_name)
+    name = paragraph.add_run(u'%s' % real_name)
+    name.font.size = Pt(12)
+    name.bold = True
 
     paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'出生日期：')
-    name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
-    name.bold = True
-    if birthday is None:
-        birthday = ''
-    paragraph.add_run(birthday)
-
+    paragraph.add_run(u'%s生于%s' % (birthday, birth_place))
     paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'现居住地：')
-    name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
-    name.bold = True
-    if live_place is None:
-        live_place = ''
-    paragraph.add_run(u'%s' % live_place)
+    if education_list and len(education_list) > 0:
+        for education in education_list:
+            education_str = ''
+            if education['education'] == 2000:
+                education_str = u'学士'
+            elif education['education'] == 3000:
+                education_str = u'硕士'
+            elif education['education'] == 4000:
+                education_str = u'博士'
+            if education_str != '':
+                if education['years'] > time.localtime().tm_year:
+                    paragraph.add_run(u'%d将毕业于%s%s系 获%s学位' % (
+                        education['years'], education['university'], education['series'], education_str))
+                else:
+                    paragraph.add_run(u'%d毕业于%s%s系 获%s学位' % (
+                        education['years'], education['university'], education['series'], education_str))
+                paragraph = document.add_paragraph()
+    paragraph.add_run(u'现工作生活于%s' % live_place)
 
-    paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'毕业院校：')
+    paragraph = document.add_paragraph('\n')
+    name = paragraph.add_run(u'个展')
     name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
     name.bold = True
-    if school is None:
-        school = ''
-    paragraph.add_run(u'%s' % school)
 
-    paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'个展：')
-    name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
-    name.bold = True
-    if len(personal_exhibition) > 0:
-        for exhibition in personal_exhibition:
-            paragraph.add_run(u'\r %s %s %s %s' % (exhibition['year'], exhibition['name'], exhibition['space_name'],
-                                                   exhibition['city']))
+    generate_show(paragraph, document, personal_exhibition)
 
-    paragraph = document.add_paragraph()
-    name = paragraph.add_run(u'联展：')
+    paragraph = document.add_paragraph('\n')
+    name = paragraph.add_run(u'联展')
     name.font.size = Pt(12)
-    name.font.name = u'微软雅黑'
     name.bold = True
-    if len(joint_exhibition) > 0:
-        for exhibition in joint_exhibition:
-            text = u'\r %s %s %s %s' % (exhibition['year'], exhibition['name'], exhibition['space_name'],
-                                        exhibition['city'])
-            # print text
-            paragraph.add_run(text)
+
+    generate_show(paragraph, document, joint_exhibition)
     document.save(out_path)
+
+
+def generate_show(paragraph, document, exhibition_list):
+
+    exhibition_map = {}
+    exhibition_list = filter(lambda e: e['name'] != '无', exhibition_list)
+    if len(exhibition_list) > 0:
+        year_list = []
+        for exhibition in exhibition_list:
+            year = exhibition['year']
+            if year not in exhibition_map:
+                exhibition_map[year] = [exhibition]
+            else:
+                exhibition_map[year].append(exhibition)
+            if year not in year_list:
+                year_list.append(year)
+        for year in year_list:
+            paragraph = document.add_paragraph()
+            paragraph.add_run(u'%s' % year)
+            for exhibition in exhibition_map[year]:
+                paragraph = document.add_paragraph()
+                paragraph.add_run(u'%s，%s，%s' % (exhibition['name'], exhibition['space_name'], exhibition['city']))
+    else:
+        paragraph = document.add_paragraph()
+        paragraph.add_run(u'无')
 
 
 def recursion(path, index):
@@ -246,45 +262,45 @@ def export_attachment():
         author_dir = os.path.join(artwork_dir, attachment['user_id'])
         oss_kit_ = oss_kit.OssKit(attachment['bucket_name'])
         key = str(attachment['key_value'])
-        oss_kit_.download(key, os.path.join(author_dir, u'方案'+ key[key.index('.'):]))
+        oss_kit_.download(key, os.path.join(author_dir, u'方案' + key[key.index('.'):]))
+
+
+def fix_name_duplicate_artwork():
+    dir_list = os.listdir(artwork_dir)
+    for user_dir in dir_list:
+        artwork_list = os.listdir(os.path.join(artwork_dir, user_dir))
+        artwork_map = {}
+        for artwork in artwork_list:
+            artwork_path = os.path.join(artwork_dir, user_dir, artwork)
+            artwork = artwork[0:artwork.find('(1)')]
+            if artwork not in artwork_map:
+                artwork_map[artwork] = [artwork_path]
+            else:
+                artwork_map[artwork].append(artwork_path)
+            # if os.path.isfile(artwork_path):
+            #     if artwork_path.find('(1)') > 0:
+            #         print artwork_path
+            # suffix = os.path.splitext(artwork_path)[1]
+            # if suffix != '.jpg':
+            #     index = artwork_path.find('.jpg')
+            #     new_path = artwork_path[0:index] + artwork_path[index + 4:] + '.jpg'
+            #     print artwork_path + " ==> " + new_path
+            #     os.rename(artwork_path, new_path)
+        for key in artwork_map:
+            duplicate_artwork = artwork_map[key]
+            if len(duplicate_artwork) > 1:
+                i = 1
+                for name in duplicate_artwork:
+                    new_path = os.path.join(name[0:name.find('(1)')] + '[' + str(i) + ']') + '.jpg'
+                    print name + " ==> " + new_path
+                    os.rename(name, new_path)
+                    i += 1
 
 
 if __name__ == '__main__':
-    #
-    #     select
-    #     real_name,
-    #     mobile,
-    #     ar.email,
-    #     ar.birthday,
-    #     concat_ws('-', parent.REGION_NAME, region.REGION_NAME)
-    #     live_place,
-    #     su.GRADUATEPLACE
-    # from activity_registration ar
-    #
-    # left
-    # join
-    # sys_user
-    # su
-    # on
-    # ar.user_id = su.ID
-    # left
-    # join
-    # region
-    # region
-    # on
-    # region.ID = ar.live_place
-    # left
-    # join
-    # region
-    # parent
-    # on
-    # region.PARENT_ID = parent.ID
-    # where
-    # ar.activity_id = 10000007
-
     # create_dir()
     # download_artwork_form_oss()
-    # export_resume()
+    # fix_name_duplicate_artwork()
+    export_resume()
     # export_attachment()
-    translate()
-
+    # translate()

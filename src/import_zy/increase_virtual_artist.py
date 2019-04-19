@@ -13,29 +13,30 @@ class IncreaseVirtualArtistTask:
         self.__init_db()
         self.__run_date = run_date.date()
         self.__activity_id = activity_id
-        self.__increase_artist_count = 10
+        self.__increase_artist_count = 50
+        self.__increase_artwork_count = 8
         self.__already_increase = False
-        if 15 < self.__run_date.day <= 25:
-            self.__increase_artist_count = 20
-        if 25 < self.__run_date.day <= 31:
-            self.__increase_artist_count = 50
-            self.__increase_artist_count = 50
+        # if 15 < self.__run_date.day <= 25:
+        #     self.__increase_artist_count = 20
+        # if 25 < self.__run_date.day <= 31:
+        #     self.__increase_artist_count = 50
+        #     self.__increase_artist_count = 50
 
     def __init_db(self):
 
         self.__connection = MySQLdb.connect(
-            host='59.110.25.244',
-            port=3306,
-            user='root',
-            passwd='mt_58art@',
-            db='58art_test',
-            charset='utf8'
-            # host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+            # host='59.110.25.244',
             # port=3306,
-            # user='mt_art58',
-            # passwd='Admin_58art',
-            # db='art58',
+            # user='root',
+            # passwd='mt_58art@',
+            # db='58art_test',
             # charset='utf8'
+            host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+            port=3306,
+            user='mt_art58',
+            passwd='Admin_58art',
+            db='art58',
+            charset='utf8'
         )
         self.__cursor = self.__connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -55,26 +56,28 @@ class IncreaseVirtualArtistTask:
         insert_sql = 'INSERT INTO activity_registration(`activity_id`,`real_name`, `artwork_count`, `create_time`, `update_time`) VALUES'
         random_time_list = self.__get_random_time()
         for index, segment in enumerate(random_time_list):
-            segment_sql += "(10000005, 'python shell', %d, '%s', '%s')" % (int(random.uniform(6, 11)), segment, segment)
+            # segment_sql += "(%s, 'python shell', %d, '%s', '%s')" % (self.__activity_id, int(random.uniform(6, 11)), segment, segment)
+            segment_sql += "(%s, 'python shell', %d, '%s', '%s')" % (self.__activity_id, self.__increase_artwork_count, segment, segment)
             if index == len(random_time_list) - 1:
                 segment_sql += ';'
             else:
                 segment_sql += ','
         insert_sql += segment_sql
         print insert_sql
-        self.__cursor.execute(insert_sql)
-        self.__connection.commit()
-        self.__already_increase = True
-        self.__connection.close()
-        print '%s has increased ' % self.__run_date
+        # self.__cursor.execute(insert_sql)
+        # self.__connection.commit()
+        # self.__already_increase = True
+        # self.__connection.close()
+        # print '%s has increased ' % self.__run_date
 
 
 if __name__ == '__main__':
 
-    for days in range(1, 2):
+    for days in range(1, 19):
         today = datetime.datetime.today()
         less_day = datetime.timedelta(days=days)
-        task = IncreaseVirtualArtistTask(today + less_day)
+        # print today + less_day
+        task = IncreaseVirtualArtistTask(today + less_day, 10000008)
         task.generate()
 
     print 'complete !!'

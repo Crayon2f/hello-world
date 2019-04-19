@@ -16,7 +16,7 @@ cursor = connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 
 
 def get_name():
-    sql = "SELECT concat_ws('-',parent.REGION_NAME, child.REGION_NAME)AS name ,child.id  FROM " \
+    sql = "SELECT concat_ws('',parent.REGION_NAME, child.REGION_NAME)AS name ,child.id  FROM " \
           "region child LEFT JOIN region parent ON child.PARENT_ID = parent.ID"
 
     region_dict = {}

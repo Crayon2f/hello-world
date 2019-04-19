@@ -5,6 +5,7 @@ import sys
 import os
 import shutil
 import traceback
+import time
 
 reload(sys)
 sys.setdefaultencoding('gbk')
@@ -74,5 +75,13 @@ if __name__ == '__main__':
     # old = r'G:\artworks\0000a32b-8313-4d93-8bbf-97156b6c574d\detail'
     # new = r'G:\artworks\0000a32b-8313-4d93-8bbf-97156b6c574d' + u'\\细节图'
     # os.rename(old, new)
-    var = 'kkk.jpg'
-    print(var[var.index('.'):])
+    # var = 'kkk.jpg'
+    # print(var[var.index('.'):])
+    # var = 'ddddd'
+    # print var.find('3')
+    map1 = {'2018': 3, '2017': 4, '2015': 1, '2016': 2}
+    print map1
+    # map1.keys().sort()
+    sorted(map1.keys(), key=lambda x: x[0], reverse=True)
+    print map1
+
