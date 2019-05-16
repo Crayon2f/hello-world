@@ -1,4 +1,5 @@
 # coding=utf-8
+import shutil
 import traceback
 
 import MySQLdb
@@ -26,11 +27,16 @@ cursor = connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
 
 # artwork_dir = '/Volumes/Crayon2f/artworks/'
 artwork_dir = u'f:\\artworks\\'
+final_artwork_dir = u'F:\\final_round\\'
 change_sign = '-'
 activity_id = config_kit.CONFIG.get('activity', 'id')
 
 
 def create_dir():
+    """
+    创建所有参展的艺术家文件夹
+    :return:
+    """
     sql = "SELECT user_id FROM activity_registration WHERE activity_id = %s AND user_id <> ''" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
@@ -42,12 +48,20 @@ def create_dir():
 
 
 def get_artwork():
+    """
+    获取当前海选所有作品
+    :return:
+    """
     sql = "SELECT  `NAME` AS name, ID id, AUTHOR author, `client` FROM voting_artwork WHERE ACTIVITY_ID = %s " % activity_id
     cursor.execute(sql)
     return cursor.fetchall()
 
 
 def download_artwork_form_oss():
+    """
+    下载OSS的作品
+    :return:
+    """
     artwork_list = get_artwork()
     index_out = 0
     bucket_name = 'mt-original'
@@ -83,6 +97,12 @@ def download_artwork_form_oss():
 
 
 def get_oss_key(artwork_id, bucket_name):
+    """
+    获取OSS地址
+    :param artwork_id: 作品ID
+    :param bucket_name: bucket
+    :return:
+    """
     sql = "select key_value as `key` from art_images where source_id = '%s' and " \
           "bucket_name = '%s' and RULE_CODE = 'original' order by category desc " % (artwork_id, bucket_name)
     cursor.execute(sql)
@@ -90,6 +110,11 @@ def get_oss_key(artwork_id, bucket_name):
 
 
 def translate_sign(origin):
+    """
+    转换特殊符号
+    :param origin:
+    :return:
+    """
     if origin is '':
         return origin
     return origin.replace('<', change_sign).replace('>', change_sign).replace(':', change_sign) \
@@ -98,6 +123,10 @@ def translate_sign(origin):
 
 
 def export_resume():
+    """
+    导出简历
+    :return:
+    """
     region_dict = get_region.get_name()
     sql = "SELECT ar.user_id, ar.real_name, ar.birthday, ar.live_place AS live_place," \
           " ar.terminal, su.BIRTHPLACE as birth_place FROM " \
@@ -142,6 +171,11 @@ def export_resume():
 
 
 def get_education_list(user_id):
+    """
+    获取学历集合
+    :param user_id: 用户ID
+    :return:
+    """
     sql = "select * from artist_education where user_id = '%s' order by education asc" % user_id
     cursor.execute(sql)
     return cursor.fetchall()
@@ -149,6 +183,18 @@ def get_education_list(user_id):
 
 def write_word(joint_exhibition, personal_exhibition, out_path, real_name='', birthday='', live_place='',
                birth_place='', education_list=None):
+    """
+    生成 word
+    :param joint_exhibition: 联展
+    :param personal_exhibition: 个展
+    :param out_path: 输出目录
+    :param real_name: 真是姓名
+    :param birthday: 生日
+    :param live_place: 现居住地
+    :param birth_place: 出生地
+    :param education_list: 学历集合
+    :return:
+    """
     if education_list is None:
         education_list = []
     document = Document()
@@ -201,7 +247,13 @@ def write_word(joint_exhibition, personal_exhibition, out_path, real_name='', bi
 
 
 def generate_show(paragraph, document, exhibition_list):
-
+    """
+    生成展览
+    :param paragraph: 换行符
+    :param document: 当前 word
+    :param exhibition_list: 展览
+    :return:
+    """
     exhibition_map = {}
     exhibition_list = filter(lambda e: e['name'] != '无', exhibition_list)
     if len(exhibition_list) > 0:
@@ -226,6 +278,12 @@ def generate_show(paragraph, document, exhibition_list):
 
 
 def recursion(path, index):
+    """
+    递归找重复的名字
+    :param path: 路径
+    :param index: 当前重复的次数
+    :return:
+    """
     if os.path.exists(path):
         index += 1
         path = '%s(%d)' % (path, index)
@@ -235,13 +293,19 @@ def recursion(path, index):
 
 
 def translate():
+    """
+    将文件夹ID转换为汉字
+    :return:
+    """
     sql = "SELECT user_id, real_name FROM activity_registration WHERE activity_id = %s and user_id <> '';" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
     for user in user_list:
         author_dir = os.path.join(artwork_dir, user['user_id'])
+        # author_dir = os.path.join(final_artwork_dir, user['user_id'])
         if os.path.exists(author_dir):
             new_author_dir = os.path.join(artwork_dir, translate_sign(user['real_name'].strip()))
+            # new_author_dir = os.path.join(final_artwork_dir, translate_sign(user['real_name'].strip()))
             if os.path.exists(new_author_dir):
                 new_author_dir = recursion(new_author_dir, 0)
             print(new_author_dir)
@@ -255,6 +319,10 @@ def translate():
 
 
 def export_attachment():
+    """
+    导出附件
+    :return:
+    """
     sql = 'select user_id, bucket_name, key_value from activity_attachment where activity_id = %s' % activity_id
     cursor.execute(sql)
     attachment_list = cursor.fetchall()
@@ -263,9 +331,13 @@ def export_attachment():
         oss_kit_ = oss_kit.OssKit(attachment['bucket_name'])
         key = str(attachment['key_value'])
         oss_kit_.download(key, os.path.join(author_dir, u'方案' + key[key.index('.'):]))
+    return
 
 
 def fix_name_duplicate_artwork():
+    """
+    修改名字重复的作品
+    """
     dir_list = os.listdir(artwork_dir)
     for user_dir in dir_list:
         artwork_list = os.listdir(os.path.join(artwork_dir, user_dir))
@@ -297,10 +369,32 @@ def fix_name_duplicate_artwork():
                     i += 1
 
 
+def copy_designation_round_artwork():
+    """
+    从所有的艺术家作品中 复制指定轮次的作品
+    """
+    sql = "select user_id from voting where show_id = 10000008 and round >= 3"
+    cursor.execute(sql)
+    user_list = cursor.fetchall()
+    for user in user_list:
+        target_dir = os.path.join(final_artwork_dir, user['user_id'])
+        source_dir = os.path.join(artwork_dir, user['user_id'])
+        shutil.copytree(source_dir, target_dir)
+
+
 if __name__ == '__main__':
     # create_dir()
     # download_artwork_form_oss()
     # fix_name_duplicate_artwork()
-    export_resume()
+    # export_resume()
     # export_attachment()
     # translate()
+    # copy_designation_round_artwork()
+    dir_list = os.listdir(os.path.join(final_artwork_dir))
+    i = 1
+    for user_dir in dir_list:
+        print i
+        duplicate_path = os.path.join(artwork_dir, user_dir + "(1)")
+        if os.path.exists(duplicate_path):
+            shutil.rmtree(duplicate_path)
+        i += 1
