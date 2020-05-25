@@ -1,18 +1,20 @@
 # coding=utf-8
-import MySQLdb
+import pymysql
 import pandas as pd
 import math
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+import importlib
 
-connection = MySQLdb.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+importlib.reload(sys)
+# sys.setdefaultencoding('utf-8')
+
+connection = pymysql.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
                              port=3306,
                              user='mt_art58',
                              passwd='Admin_58art',
                              db='art58',
                              charset='utf8')
-cursor = connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+cursor = connection.cursor(pymysql.cursors.DictCursor)
 
 
 def get_name():

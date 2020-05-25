@@ -3,7 +3,7 @@
 
 
 string = '23.4'
-print complex(string)
-print eval(string)
+print(complex(string))
+print(eval(string))
 
-print r'\r'
+print(r'\r')

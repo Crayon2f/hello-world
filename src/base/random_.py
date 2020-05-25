@@ -14,16 +14,16 @@ import random
 
 collection = [1, 2, 3, 4, 5, 6, 7, 8]
 
-print random.choice(collection)
+print(random.choice(collection))
 
-print random.randrange(2, 10)
+print(random.randrange(2, 10))
 
-print random.seed(10)
-
-random.shuffle(collection)
-print collection
+print(random.seed(10))
 
 random.shuffle(collection)
-print collection
+print(collection)
 
-print random.uniform(3, 10)
+random.shuffle(collection)
+print(collection)
+
+print(random.uniform(3, 10))

@@ -1,6 +1,6 @@
 # coding=utf-8
 import random
-import MySQLdb
+import pymysql
 import datetime
 import time
 
@@ -24,7 +24,7 @@ class IncreaseVirtualArtistTask:
 
     def __init_db(self):
 
-        self.__connection = MySQLdb.connect(
+        self.__connection = pymysql.connect(
             # host='59.110.25.244',
             # port=3306,
             # user='root',
@@ -38,7 +38,7 @@ class IncreaseVirtualArtistTask:
             db='art58',
             charset='utf8'
         )
-        self.__cursor = self.__connection.cursor(MySQLdb.cursors.DictCursor)
+        self.__cursor = self.__connection.cursor(pymysql.cursors.DictCursor)
 
     def __get_random_time(self):
         random_time_list = []
@@ -63,12 +63,12 @@ class IncreaseVirtualArtistTask:
             else:
                 segment_sql += ','
         insert_sql += segment_sql
-        print insert_sql
+        print(insert_sql)
         # self.__cursor.execute(insert_sql)
         # self.__connection.commit()
         # self.__already_increase = True
         # self.__connection.close()
-        # print '%s has increased ' % self.__run_date
+        # print('%s has increased ' % self.__run_date)
 
 
 if __name__ == '__main__':
@@ -76,11 +76,11 @@ if __name__ == '__main__':
     for days in range(1, 19):
         today = datetime.datetime.today()
         less_day = datetime.timedelta(days=days)
-        # print today + less_day
+        # print(today + less_day)
         task = IncreaseVirtualArtistTask(today + less_day, 10000008)
         task.generate()
 
-    print 'complete !!'
+    print('complete !!')
 
     # while True:
     #     today = datetime.datetime.now()
@@ -90,12 +90,12 @@ if __name__ == '__main__':
     #         try:
     #             task = IncreaseVirtualArtistTask()
     #             task.generate()
-    #             print '----------- wait an hour ------------'
+    #             print('----------- wait an hour ------------')
     #             time.sleep(3600)
     #         except BaseException, error:
-    #             print error.message
-    #             print error
+    #             print(error.message)
+    #             print(error)
     #     else:
-    #         print "now is %d'clock, isn't zero not yet" % today.hour
-    #         print '----------- wait an hour ------------'
+    #         print("now is %d'clock, isn't zero not yet" % today.hour)
+    #         print('----------- wait an hour ------------')
     #         time.sleep(3600)

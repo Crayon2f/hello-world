@@ -3,8 +3,6 @@ import os
 import sys
 
 for p in sys.path:
-    print p
+    print(p)
 
-print os.path.realpath(__file__)
-
-
+print(os.path.realpath(__file__))

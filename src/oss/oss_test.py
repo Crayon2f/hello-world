@@ -7,4 +7,4 @@ if __name__ == '__main__':
     #     'G:\\temp.jpg')
     # oss_kit.OssKit().delete("")
     oss = oss_kit.OssKit()
-    print oss.get_bucket_name()
+    print(oss.get_bucket_name())

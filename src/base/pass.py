@@ -4,5 +4,5 @@
 
 for number in range(2, 10):
     pass
-    print 'pass'
-    print number
+    print('pass')
+    print(number)

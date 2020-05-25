@@ -1,7 +1,7 @@
 # coding=utf-8
 import pandas as pd
 import uuid
-import MySQLdb
+import pymysql
 import datetime
 import math
 import traceback
@@ -17,13 +17,13 @@ def get_uuid():
 #                              user='root',
 #                              passwd='mt_58art@',
 #                              db='58art_test',
-connection = MySQLdb.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+connection = pymysql.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
                              port=3306,
                              user='mt_art58',
                              passwd='Admin_58art',
                              db='art58',
                              charset='utf8')
-cursor = connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+cursor = connection.cursor(pymysql.cursors.DictCursor)
 
 password = 'E10ADC3949BA59ABBE56E057F20F883E'
 
@@ -95,8 +95,8 @@ if __name__ == '__main__':
                                    )
                 execute(insert_image_sql)
             connection.commit()
-    except BaseException, e:
-        print e.message
+    except BaseException as e:
+        print(e.message)
         traceback.print_exc()
         connection.rollback()
     finally:

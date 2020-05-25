@@ -1,4 +1,3 @@
-from string import strip
 
 EMPTY = ''
 
@@ -15,4 +14,4 @@ def str_trim(string):
     if str_is_none(string):
         return EMPTY
     else:
-        return strip(string)
+        return str.strip(string)

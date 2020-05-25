@@ -2,7 +2,7 @@
 import shutil
 import traceback
 
-import MySQLdb
+import pymysql
 import sys
 import os
 import math
@@ -13,21 +13,21 @@ from docx.shared import Pt
 from docx.oxml.ns import qn
 from oss import oss_kit
 from import_zy import get_region
+import importlib
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+importlib.reload(sys)
 
-connection = MySQLdb.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
+connection = pymysql.connect(host='mt-58art-database-open.mysql.rds.aliyuncs.com',
                              port=3306,
                              user='mt_art58',
                              passwd='Admin_58art',
                              db='art58',
                              charset='utf8')
-cursor = connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+cursor = connection.cursor(pymysql.cursors.DictCursor)
 
 # artwork_dir = '/Volumes/Crayon2f/artworks/'
-artwork_dir = u'f:\\artworks\\'
-final_artwork_dir = u'F:\\final_round\\'
+artwork_dir = u'e:\\artworks\\'
+final_artwork_dir = u'e:\\final_round\\'
 change_sign = '-'
 activity_id = config_kit.CONFIG.get('activity', 'id')
 
@@ -37,7 +37,7 @@ def create_dir():
     创建所有参展的艺术家文件夹
     :return:
     """
-    sql = "SELECT user_id FROM activity_registration WHERE activity_id = %s AND user_id <> ''" % activity_id
+    sql = "SELECT user_id FROM activity_registration WHERE is_virtual = 0  and activity_id = %s AND user_id <> ''" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
     if len(user_list) > 0:
@@ -68,7 +68,7 @@ def download_artwork_form_oss():
     _oss_kit = oss_kit.OssKit(bucket_name)
     for artwork in artwork_list:
         index_out += 1
-        print index_out
+        print(index_out)
         dir_name = artwork_dir + artwork['author']
         artwork_name = translate_sign(artwork['name'].strip())
         artwork_path = '%s/%s.jpg' % (dir_name, artwork_name)
@@ -89,9 +89,9 @@ def download_artwork_form_oss():
                         if not os.path.exists(append_path):
                             _oss_kit.download(str(append_key['key']), append_path)
             else:
-                print artwork['id'] + ' has not oss_key'
-        except BaseException, exception:
-            print(exception.message)
+                print(artwork['id'] + ' has not oss_key')
+        except BaseException as exception:
+            print(exception)
             print('===== %s =====' % artwork['id'])
             traceback.print_exc()
 
@@ -115,7 +115,7 @@ def translate_sign(origin):
     :param origin:
     :return:
     """
-    if origin is '':
+    if origin == '':
         return origin
     return origin.replace('<', change_sign).replace('>', change_sign).replace(':', change_sign) \
         .replace('"', change_sign).replace('/', change_sign).replace('\\', change_sign) \
@@ -137,7 +137,7 @@ def export_resume():
     index = 0
     for user in user_list:
         index += 1
-        print index
+        print(index)
         personal_exhibition = []
         joint_exhibition = []
         try:
@@ -161,13 +161,14 @@ def export_resume():
             if not os.path.exists(artwork_dir + user['user_id']):
                 out_path = u"%s%s.docx" % (artwork_dir, translate_sign(real_name))
             education_list = get_education_list(user['user_id'])
-            write_word(joint_exhibition, personal_exhibition, out_path, real_name, user['birthday'], region_name,
-                       user['birth_place'], education_list)
-            print user['real_name'] + ' resume export successful '
-        except BaseException, exception:
-            print exception.message
+            if education_list and len(education_list) > 0:
+                write_word(joint_exhibition, personal_exhibition, out_path, real_name, user['birthday'], region_name,
+                           user['birth_place'], education_list)
+            print(user['real_name'] + ' resume export successful ')
+        except BaseException as exception:
+            print(exception.message)
             traceback.print_exc()
-            print "export word error user_id ==> %s" % user['user_id']
+            print("export word error user_id ==> %s" % user['user_id'])
 
 
 def get_education_list(user_id):
@@ -256,7 +257,7 @@ def generate_show(paragraph, document, exhibition_list):
     """
     exhibition_map = {}
     exhibition_list = filter(lambda e: e['name'] != '无', exhibition_list)
-    if len(exhibition_list) > 0:
+    if exhibition_list and len(exhibition_list) > 0:
         year_list = []
         for exhibition in exhibition_list:
             year = exhibition['year']
@@ -297,7 +298,7 @@ def translate():
     将文件夹ID转换为汉字
     :return:
     """
-    sql = "SELECT user_id, real_name FROM activity_registration WHERE activity_id = %s and user_id <> '';" % activity_id
+    sql = "SELECT user_id, real_name FROM activity_registration WHERE is_virtual = 0 and  activity_id = %s and user_id <> '';" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
     for user in user_list:
@@ -311,11 +312,11 @@ def translate():
             print(new_author_dir)
             try:
                 os.rename(author_dir, new_author_dir)
-                print user['real_name'] + ' success '
-            except BaseException, e:
-                print e.message
+                print(user['real_name'] + ' success ')
+            except BaseException as e:
+                print(e)
                 traceback.print_exc()
-                print user['user_id'] + ' fail'
+                print(user['user_id'] + ' fail')
 
 
 def export_attachment():
@@ -351,12 +352,14 @@ def fix_name_duplicate_artwork():
                 artwork_map[artwork].append(artwork_path)
             # if os.path.isfile(artwork_path):
             #     if artwork_path.find('(1)') > 0:
-            #         print artwork_path
+            #         print(artwork_path
+            #
             # suffix = os.path.splitext(artwork_path)[1]
             # if suffix != '.jpg':
             #     index = artwork_path.find('.jpg')
             #     new_path = artwork_path[0:index] + artwork_path[index + 4:] + '.jpg'
-            #     print artwork_path + " ==> " + new_path
+            #     print(artwork_path + " ==> " + new_path
+            #
             #     os.rename(artwork_path, new_path)
         for key in artwork_map:
             duplicate_artwork = artwork_map[key]
@@ -364,7 +367,7 @@ def fix_name_duplicate_artwork():
                 i = 1
                 for name in duplicate_artwork:
                     new_path = os.path.join(name[0:name.find('(1)')] + '[' + str(i) + ']') + '.jpg'
-                    print name + " ==> " + new_path
+                    print(name + " ==> " + new_path)
                     os.rename(name, new_path)
                     i += 1
 
@@ -388,12 +391,12 @@ if __name__ == '__main__':
     # fix_name_duplicate_artwork()
     # export_resume()
     # export_attachment()
-    # translate()
+    translate()
     # copy_designation_round_artwork()
     dir_list = os.listdir(os.path.join(final_artwork_dir))
     i = 1
     for user_dir in dir_list:
-        print i
+        print(i)
         duplicate_path = os.path.join(artwork_dir, user_dir + "(1)")
         if os.path.exists(duplicate_path):
             shutil.rmtree(duplicate_path)

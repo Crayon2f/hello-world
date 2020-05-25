@@ -5,21 +5,23 @@ import calendar
 import time
 
 ticks = time.time()
-print '当前时间戳:', ticks
+print('当前时间戳:', ticks)
 
 localtime = time.localtime(time.time())
-print localtime.tm_year
-print localtime
+print(localtime.tm_year)
+print(localtime)
 
-print time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-print time.strftime('%Y-%m-%d 00:00:00', time.localtime())
+print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+print(time.strftime('%Y-%m-%d 00:00:00', time.localtime()))
 
-# print time.clock()
+# print(time.clock()
+#
 #
 # time.sleep(2.5)
 #
-# print time.clock()
+# print(time.clock()
+#
 
-print time.asctime(time.localtime())
+print(time.asctime(time.localtime()))
 
-print calendar.isleap(int(time.strftime('%Y', time.localtime())))
+print(calendar.isleap(int(time.strftime('%Y', time.localtime()))))

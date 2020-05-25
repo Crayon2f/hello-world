@@ -1,23 +1,23 @@
 # coding=utf-8
 
 # 2的3次方
-print 2 ** 3
+print(2 ** 3)
 # 取整
-print 2 // 3
+print(2 // 3)
 # <> 不等于 相当于!=
 list = [2, 3, 4]
 list_back_up = [2, 3, 4, 5]
-print list != list_back_up
+print(list != list_back_up)
 # 位运算
 a = 60  # 0011 1100
 b = 13  # 0000 1101
 
-print a & b  # 12  0000 1100 都是1得1,否则为0
-print a | b  # 61  0011 1101 有一个1则得1,否则为0
-print a ^ b  # 49  0011 0001 对应的二进位不同时得1,否则为0
-print ~a  # -61  1100 0011 对每个二进位取反,0换为1,1换为0
-print a << 2  # 240 1111 0000 各二进位全部左移若干位，由"<<"右边的数指定移动的位数，高位丢弃，低位补0
-print a >> 2  # 15 0000 1111 把">>"左边的运算数的各二进位全部右移若干位，">>"右边的数指定移动的位数
+print(a & b)  # 12  0000 1100 都是1得1,否则为0
+print(a | b)  # 61  0011 1101 有一个1则得1,否则为0
+print(a ^ b)  # 49  0011 0001 对应的二进位不同时得1,否则为0
+print(~a)  # -61  1100 0011 对每个二进位取反,0换为1,1换为0
+print(a << 2)  # 240 1111 0000 各二进位全部左移若干位，由"<<"右边的数指定移动的位数，高位丢弃，低位补0
+print(a >> 2)  # 15 0000 1111 把">>"左边的运算数的各二进位全部右移若干位，">>"右边的数指定移动的位数
 
 # 逻辑运算符
 # and 相当于java中的&&
@@ -31,8 +31,8 @@ n	如果在指定的序列中找到值返回 True，否则返回 False。	x 在 
 not in	如果在指定的序列中没有找到值返回 True，否则返回 False。	x 不在 y 序列中 , 如果 x 不在 y 序列中返回 True。
 '''
 inList = [1, 2, 3, 4, 5]
-print 3 in inList  # True
-print 12 in inList  # False
+print(3 in inList)  # True
+print(12 in inList)  # False
 
 # 身份运算符
 
@@ -46,10 +46,10 @@ is not	is not 是判断两个标识符是不是引用自不同对象	x is not y 
 aa = '12'
 bb = '12'
 cc = '23'
-print aa is bb
+print(aa is bb)
 bb = '34'
-print aa is bb
-print aa is cc
+print(aa is bb)
+print(aa is cc)
 
 # is 和 == 区别 (相当于 java中的 equals 和 == )
 

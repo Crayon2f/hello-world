@@ -1,5 +1,5 @@
 # coding:utf-8
-import MySQLdb
+import pymysql
 
 from kit import config_kit, str_kit
 from mysql.sql_error import SQLError
@@ -9,13 +9,13 @@ from mysql.sql_validator import Validator
 
 class MySQL:
     def __init__(self):
-        self.__connection = MySQLdb.connect(host=config_kit.CONFIG.get('db-mysql', 'host'),
+        self.__connection = pymysql.connect(host=config_kit.CONFIG.get('db-mysql', 'host'),
                                             port=config_kit.CONFIG.getint('db-mysql', 'port'),
                                             user=config_kit.CONFIG.get('db-mysql', 'username'),
                                             passwd=config_kit.CONFIG.get('db-mysql', 'password'),
                                             db=config_kit.CONFIG.get('db-mysql', 'database'),
                                             charset=config_kit.CONFIG.get('db-mysql', 'charset'))
-        self.__cursor = self.__connection.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+        self.__cursor = self.__connection.cursor(pymysql.cursors.DictCursor)
 
     def query(self, table, params='*', cnd=None):
         Validator.check_table(table)
@@ -30,7 +30,7 @@ class MySQL:
         query_sql += ' from %s ' % table
         if cnd is not None:
             query_sql += cnd.generate()
-        print query_sql
+        print(query_sql)
         self.__cursor.execute(query_sql)
         return self.__cursor.fetchall()
 
@@ -46,7 +46,7 @@ class MySQL:
         if cnd is None:
             raise SQLError('cnd cant\'t be None')
         delete_sql = 'delete from %s ' % table + cnd.generate()
-        print delete_sql
+        print(delete_sql)
         count = self.__cursor.execute(delete_sql)
         self.__connection.commit()
         return count
@@ -62,7 +62,7 @@ class MySQL:
         if None is bean or len(bean) == 0:
             raise SQLError('bean can\'t be None')
         insert_sql = 'insert into %s(%s) value (%s)' % (table, ','.join(bean.keys()), ','.join(bean.values()))
-        print insert_sql
+        print(insert_sql)
         return self.__cursor.execute(insert_sql)
 
     def insert_many(self, table, beans):
@@ -73,7 +73,7 @@ class MySQL:
         for bean in beans:
             values_sql += ',(%s)' % ','.join(bean.values())
         insert_sql = 'insert into %s (%s) values %s' % (table, ','.join(beans[0].keys()), values_sql[1:])
-        print insert_sql
+        print(insert_sql)
         return self.__cursor.execute(insert_sql)
 
     def close(self):
@@ -88,20 +88,20 @@ if __name__ == '__main__':
         #     'description': 'test'
         # }
         # result = MySQL().insert('city', test_bean)
-        # print result
-        # print MySQL().delete_by_id('city', 3414)
+        # print(result)
+        # print(MySQL().delete_by_id('city', 3414))
         sql_exp = SqlExpression().exp_and('id', equal, 4415)
         result = MySQL().query_one('activity_registration', '*', Cnd().where(sql_exp))
-        print result
+        print(result)
 
-    except SQLError, error:
-        print error.message
-        print type(error)
-        print error
-        # print 'str(Exception):\t', str(Exception)
-        # print 'str(e):\t\t', str(e1)
-        # print 'repr(e):\t', repr(e1)
-        # print 'e.message:\t', e1.message
-        # # print 'traceback.print_exc():' % traceback.print_exc()
-        # # print 'traceback.format_exc():\n%s' % traceback.format_exc()
-        # print type(repr(45))
+    except SQLError as error:
+        print(error.message)
+        print(type(error))
+        print(error)
+        # print('str(Exception):\t', str(Exception))
+        # print('str(e):\t\t', str(e1))
+        # print('repr(e):\t', repr(e1))
+        # print('e.message:\t', e1.message)
+        # # print('traceback.print_exc():' % traceback.print_exc())
+        # # print('traceback.format_exc():\n%s' % traceback.format_exc())
+        # print(type(repr(45)))

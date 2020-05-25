@@ -12,7 +12,8 @@ import datetime
 #     count += 1
 #     if count < 4:
 #         run(msg, start_time)
-#     print 'msg:%s, start_time:%s' % (msg, start_time)
+#     print('msg:%s, start_time:%s' % (msg, start_time)
+#
 #
 #
 # schedule = sched.scheduler(time.time, time.sleep)
@@ -22,7 +23,7 @@ import datetime
 # time.sleep(4)
 
 def run():
-    print 'do something'
+    print('do something')
     time.sleep(10)
 
 
@@ -34,5 +35,5 @@ if __name__ == '__main__':
                 run()
             else:
                 time.sleep(5)
-                print 'incompatible'
+                print('incompatible')
                 break

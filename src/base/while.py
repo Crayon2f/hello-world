@@ -1,6 +1,7 @@
 # coding=utf-8
 
-import random_
+import random
+
 #
 # s = int(random.uniform(1, 10))
 # # print(s)
@@ -27,7 +28,8 @@ import random_
 #         even.append(number)
 #     else:
 #         odd.append(number)
-# print odd, even
+# print(odd, even
+#
 
 # 猜拳游戏
 gameMap = {
@@ -36,21 +38,20 @@ gameMap = {
     3: '布'
 }
 while True:
-    computerKey = int(random_.uniform(1, 4))
+    computerKey = int(random.uniform(1, 4))
     computerValue = gameMap[computerKey]
-    m = raw_input('输入 石头、剪子、布,输入"end"结束游戏:')
+    m = input('输入 石头、剪子、布,输入"end"结束游戏:')
     keyList = gameMap.values()
     if m not in keyList and m != 'end':
-        print '输入不对'
+        print('输入不对')
     elif m == 'end':
-        print '退出游戏...'
+        print('退出游戏...')
         break
     else:
         if m == computerValue:
-            print '平局'
-        elif (m == '石头' and computerValue == '剪刀') or (m == '布' and computerValue == '石头') or (m == '剪刀' and computerValue == '布'):
-            print 'you win !'
+            print('平局')
+        elif (m == '石头' and computerValue == '剪刀') or (m == '布' and computerValue == '石头') or (
+                m == '剪刀' and computerValue == '布'):
+            print('you win !')
         else:
-            print 'you lose !'
-
-
+            print('you lose !')

@@ -5,21 +5,21 @@ name = 'ala1...alan'
 del counter
 '''
 
-print counter
-print miles
-print name
+print(counter)
+print(miles)
+print(name)
 
 dictionary = {'name': 'john', 'code': 6734, 'dept': 'sales'}
-print dictionary['code']
-print dictionary.keys()
+print(dictionary['code'])
+print(dictionary.keys())
 
 
 string = '12345'
 testList = list(string)
-print testList
+print(testList)
 
 setString = '23456'
 testSet = set(setString)
-print testSet
+print(testSet)
 
-print repr(123)
+print(repr(123))

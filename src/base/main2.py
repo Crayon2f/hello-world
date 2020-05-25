@@ -6,8 +6,9 @@ import os
 import shutil
 import traceback
 import time
+import importlib
 
-reload(sys)
+importlib.reload(sys)
 sys.setdefaultencoding('gbk')
 
 
@@ -28,10 +29,10 @@ def scan_less_file():
         #     for child in f_list:
         #         if child.endswith('.jpg'):
         #             file_path = u'%s%s/%s' % (path, f, child)
-        #             print file_path
+        #             print(file_path)
         #             os.remove(u'%s%s/%s' % (path, f, child))
         if not flag:
-            print f
+            print(f)
     print(index)
 
 
@@ -45,7 +46,7 @@ def rename():
             continue
         new = author_dir + u'\\细节图'
         os.rename(old, new)
-        print child_dir + ' complete !'
+        print(child_dir + ' complete !')
 
         # resume_path = os.path.join(author_dir, u'个人简历.docx')
         # new_resume_path = os.path.join(author_dir, u'个人简历', u'个人简历.docx')
@@ -54,11 +55,11 @@ def rename():
         #     os.mkdir(new_resume_dir)
         # try:
         #     shutil.move(resume_path, new_resume_path)
-        #     print child_dir + ' complete !'
+        #     print(child_dir + ' complete !')
         # except BaseException, e:
-        #     print e.message
+        #     print(e.message)
         #     traceback.print_exc()
-        #     print child_dir + ' is fail '
+        #     print(child_dir + ' is fail ')
 
 
 def dir_rename(target_dir, new_name):
@@ -78,10 +79,9 @@ if __name__ == '__main__':
     # var = 'kkk.jpg'
     # print(var[var.index('.'):])
     # var = 'ddddd'
-    # print var.find('3')
+    # print(var.find('3'))
     map1 = {'2018': 3, '2017': 4, '2015': 1, '2016': 2}
-    print map1
+    print(map1)
     # map1.keys().sort()
     sorted(map1.keys(), key=lambda x: x[0], reverse=True)
-    print map1
-
+    print(map1)

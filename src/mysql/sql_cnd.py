@@ -141,4 +141,4 @@ if __name__ == '__main__':
     expression1 = SqlExpression().exp_and('name', equal, '张三').exp_and('age', greater_equal, 34)
     expression2 = SqlExpression().like('name', 'z').exp_and('birthday', equal, datetime.now())
     expression3 = SqlExpression().exp_and('name', _in, ['z', 'd', 'd', 'f']).exp_and('birthday', equal, datetime.now())
-    print Cnd().where(expression1).join_or(expression2).join_or(expression3).generate()
+    print(Cnd().where(expression1).join_or(expression2).join_or(expression3).generate())

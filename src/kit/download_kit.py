@@ -22,7 +22,7 @@ class DownloadKit:
         percent = 100.0 * downloaded * data_module / file_size
         if percent > 100:
             percent = 100
-        print '%.2f%%' % percent
+        print('%.2f%%' % percent)
 
 
 if __name__ == '__main__':

@@ -16,25 +16,25 @@ class OssKit(Init):
         if str_kit.str_is_not_none(key):
             if os.path.exists(local_file):
                 self._bucket.put_object_from_file(key, local_file)
-                print '--- upload success ---'
+                print('--- upload success ---')
             else:
                 raise BaseException('local_file[%s] not exist' % local_file)
         else:
-            print 'key [%s] is empty' % key
+            print('key [%s] is empty' % key)
 
     def download(self, key, local_file):
         if str_kit.str_is_not_none(key):
             self._bucket.get_object_to_file(key, local_file)
-            print '--- download success ---'
+            print('--- download success ---')
         else:
-            print 'key[%s] is empty' % key
+            print('key[%s] is empty' % key)
 
     def delete(self, key):
         if str_kit.str_is_not_none(key):
             self._bucket.delete_object(key)
-            print '--- delete success ---'
+            print('--- delete success ---')
         else:
-            print 'key[%s] is empty' % key
+            print('key[%s] is empty' % key)
 
     def get_bucket_name(self):
         return self._bucket.bucket_name

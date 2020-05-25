@@ -1,7 +1,7 @@
 # coding:utf-8
-import ConfigParser
+import configparser
 import os
 
-__config = ConfigParser.RawConfigParser()
+__config = configparser.RawConfigParser()
 __config.read(os.path.join(os.getcwd(), '..', '..', 'config', 'prop.ini'))
 CONFIG = __config
