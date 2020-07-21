@@ -166,7 +166,7 @@ def export_resume():
                            user['birth_place'], education_list)
             print(user['real_name'] + ' resume export successful ')
         except BaseException as exception:
-            print(exception.message)
+            print("export word error : ".format(exception))
             traceback.print_exc()
             print("export word error user_id ==> %s" % user['user_id'])
 
@@ -236,18 +236,18 @@ def write_word(joint_exhibition, personal_exhibition, out_path, real_name='', bi
     name.font.size = Pt(12)
     name.bold = True
 
-    generate_show(paragraph, document, personal_exhibition)
+    generate_show(document, personal_exhibition)
 
     paragraph = document.add_paragraph('\n')
     name = paragraph.add_run(u'联展')
     name.font.size = Pt(12)
     name.bold = True
 
-    generate_show(paragraph, document, joint_exhibition)
+    generate_show(document, joint_exhibition)
     document.save(out_path)
 
 
-def generate_show(paragraph, document, exhibition_list):
+def generate_show(document, exhibition_list):
     """
     生成展览
     :param paragraph: 换行符
@@ -256,7 +256,7 @@ def generate_show(paragraph, document, exhibition_list):
     :return:
     """
     exhibition_map = {}
-    exhibition_list = filter(lambda e: e['name'] != '无', exhibition_list)
+    exhibition_list = list(filter(lambda e: e['name'] != '无', exhibition_list))
     if exhibition_list and len(exhibition_list) > 0:
         year_list = []
         for exhibition in exhibition_list:
@@ -376,7 +376,7 @@ def copy_designation_round_artwork():
     """
     从所有的艺术家作品中 复制指定轮次的作品
     """
-    sql = "select user_id from voting where show_id = 10000008 and round >= 3"
+    sql = "select user_id from voting where show_id = %s and round > 4 and voting_user_id = 60" % activity_id
     cursor.execute(sql)
     user_list = cursor.fetchall()
     for user in user_list:
@@ -386,18 +386,21 @@ def copy_designation_round_artwork():
 
 
 if __name__ == '__main__':
+    # 创建文件夹uuid形式
     # create_dir()
+    # cs阿里云下载图片
     # download_artwork_form_oss()
+    # 处理名称重复的图片
     # fix_name_duplicate_artwork()
     # export_resume()
     # export_attachment()
     translate()
     # copy_designation_round_artwork()
-    dir_list = os.listdir(os.path.join(final_artwork_dir))
-    i = 1
-    for user_dir in dir_list:
-        print(i)
-        duplicate_path = os.path.join(artwork_dir, user_dir + "(1)")
-        if os.path.exists(duplicate_path):
-            shutil.rmtree(duplicate_path)
-        i += 1
+    # dir_list = os.listdir(os.path.join(final_artwork_dir))
+    # i = 1
+    # for user_dir in dir_list:
+    #     print(i)
+    #     duplicate_path = os.path.join(artwork_dir, user_dir + "(1)")
+    #     if os.path.exists(duplicate_path):
+    #         shutil.rmtree(duplicate_path)
+    #     i += 1
