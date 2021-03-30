@@ -1,8 +1,9 @@
 # coding=utf-8
-import random
-import pymysql
 import datetime
-import time
+import random
+
+import pymysql
+import uuid
 
 
 #  从8号到15号，每天人数 + 10 ，作品数+80；15号到25号，每天 + 20， 作品数+160；25到31号每天+ 50，作品数+400.
@@ -14,8 +15,9 @@ class IncreaseVirtualArtistTask:
         self.__run_date = run_date.date()
         self.__activity_id = activity_id
         self.__increase_artist_count = 50
-        self.__increase_artwork_count = 8
+        self.__increase_artwork_count = 7
         self.__already_increase = False
+        self.__start_random_number = 1
         # if 15 < self.__run_date.day <= 25:
         #     self.__increase_artist_count = 20
         # if 25 < self.__run_date.day <= 31:
@@ -53,35 +55,31 @@ class IncreaseVirtualArtistTask:
 
     def generate(self):
         segment_sql = ''
-        insert_sql = 'INSERT INTO activity_registration(`activity_id`,`real_name`, `artwork_count`, `create_time`, `update_time`) VALUES'
+        insert_sql = 'INSERT INTO activity_registration(`activity_id`,`user_id`,`real_name`, `artwork_count`,is_virtual, `create_time`, `update_time`) VALUES'
         random_time_list = self.__get_random_time()
         for index, segment in enumerate(random_time_list):
-            # segment_sql += "(%s, 'python shell', %d, '%s', '%s')" % (self.__activity_id, int(random.uniform(6, 11)), segment, segment)
-            segment_sql += "(%s, 'python shell', %d, '%s', '%s')" % (self.__activity_id, self.__increase_artwork_count, segment, segment)
+            user_id = uuid.uuid4()
+            segment_sql += "(%s, '%s', 'python shell', %d, 1,'%s', '%s')" % (
+                self.__activity_id, user_id, self.__increase_artwork_count, segment, segment)
             if index == len(random_time_list) - 1:
                 segment_sql += ';'
             else:
                 segment_sql += ','
+            self.__start_random_number = self.__start_random_number + 1
         insert_sql += segment_sql
         print(insert_sql)
-        # self.__cursor.execute(insert_sql)
-        # self.__connection.commit()
-        # self.__already_increase = True
-        # self.__connection.close()
-        # print('%s has increased ' % self.__run_date)
 
 
 if __name__ == '__main__':
 
-    for days in range(1, 19):
+    for days in range(27, 32):
         today = datetime.datetime.today()
         less_day = datetime.timedelta(days=days)
         # print(today + less_day)
-        task = IncreaseVirtualArtistTask(today + less_day, 10000008)
+        task = IncreaseVirtualArtistTask(today + less_day, 10000012)
         task.generate()
 
     print('complete !!')
-
     # while True:
     #     today = datetime.datetime.now()
     #     if today.month > 3:

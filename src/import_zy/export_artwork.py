@@ -73,7 +73,8 @@ def download_artwork_form_oss():
         artwork_name = translate_sign(artwork['name'].strip())
         artwork_path = '%s/%s.jpg' % (dir_name, artwork_name)
         if os.path.exists(artwork_path):
-            artwork_path = recursion(artwork_path, 0)
+            continue
+            # artwork_path = recursion(artwork_path, 0)
         key_list = get_oss_key(artwork['id'], bucket_name)
         try:
             if len(key_list) > 0:
